@@ -8,6 +8,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
+#include "stream.cpp"
 
 static void glfwError(int id, const char* description) {
   std::cout << description << std::endl;
@@ -50,6 +51,9 @@ int main() {
   std::vector<float> trades_x = {2.5f, 5.5f, 7.2f, 9.8f};
   std::vector<float> trades_y = {99.5f, 97.5f, 96.8f, 98.5f};
 
+  Stream s = {};
+  s.start();
+
   // Main loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -61,7 +65,8 @@ int main() {
 
     ImGui::Begin("Open orders and fills");
 
-    if (ImPlot::BeginPlot("Order Book Plot")) {
+    ImVec2 plot_size = ImGui::GetContentRegionAvail();
+    if (ImPlot::BeginPlot("Order Book Plot", plot_size)) {
       ImPlot::SetNextLineStyle(ImVec4(0.2f, 0.6f, 1.0f, 1.0f));  // blue
       ImPlot::PlotStairs("Best Bid", x.data(), bid.data(), bid.size());
 
@@ -97,42 +102,3 @@ int main() {
 
   return 0;
 }
-// constexpr std::string BASE_URL{"api.bybit.com"};
-
-// struct Symbol {
-//   std::string symbol;
-//   std::string fundingRate;
-// };
-
-// struct Instrument {
-//   std::string symbol;
-//   int fundingInterval;  // in minutes
-// };
-
-// template <typename T>
-// struct Market {
-//   std::string category;
-//   std::vector<T> list;
-// };
-
-// template <typename T>
-// struct Response {
-//   int retCode;
-//   std::string retMsg;
-//   Market<T> result;
-
-//   void from_json(const std::string &buffer) {
-//     const glz::error_ctx e =
-//         glz::read<glz::opts{.error_on_unknown_keys = false}>(*this, buffer);
-//     if (e.ec != glz::error_code::none) {
-//       std::cerr << "JSON: " << glz::format_error(e) << std::endl;
-//       assert(false);
-//     }
-//   }
-
-//   std::string to_json() {
-//     std::string json =
-//         glz::write_json(*this).value_or("Error serializing JSON");
-//     return glz::prettify_json(json);
-//   }
-// };
